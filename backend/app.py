@@ -1,8 +1,6 @@
 import streamlit as st
 from transcriber import transcribe_audio
-from backend.translator import translate_text
-
-
+from backend.translator import translate_text  # Correct import
 from subtitle_writer import write_srt_file
 
 st.title("EduTranslate AI 🌍 - Professional Subtitle Generator")
@@ -22,7 +20,10 @@ if video:
     st.write(full_text)
 
     st.write("🌍 Translating to Urdu...")
-    translated_segments = translate_segments(segments, "ur")
+    
+    # ✅ FIX: Translate each segment using your translate_text function
+    translated_segments = [translate_text(seg['text'], "ur") for seg in segments]
+    
     st.success("✅ Translation Done")
 
     write_srt_file(segments, translated_segments, "output/urdu.srt")
@@ -30,8 +31,10 @@ if video:
 
     write_srt_file(segments, [seg['text'] for seg in segments], "output/english.srt")
     st.download_button("⬇️ Download English Subtitles", open("output/english.srt", "rb"), "english.srt")
+
 def load_css(file_path):
     with open(file_path) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 load_css("assets/style.css")
+
