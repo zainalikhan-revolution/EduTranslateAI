@@ -1,6 +1,6 @@
 import streamlit as st
 from transcriber import transcribe_audio
-from backend.translator import translate_text  # Correct import
+from translator import translate_text
 from subtitle_writer import write_srt_file
 
 st.title("EduTranslate AI 🌍 - Professional Subtitle Generator")
