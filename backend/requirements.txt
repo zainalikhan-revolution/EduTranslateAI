@@ -5,3 +5,4 @@ pydub
 gtts
 moviepy
 whisper
+deep_translator
