@@ -1,0 +1,26 @@
+/* Center the entire app */
+body {
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Make logo image rounded */
+img {
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+/* Optional: Custom button style */
+.stButton>button {
+    background-color: #2a9d8f;
+    color: white;
+    border-radius: 10px;
+    padding: 0.5em 1.2em;
+    font-size: 16px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.stButton>button:hover {
+    background-color: #21867a;
+}
