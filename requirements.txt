@@ -6,6 +6,6 @@ gtts
 moviepy
 openai-whisper
 ffmpeg-python
-torch
+torch==2.0.1
 deep_translator
 
