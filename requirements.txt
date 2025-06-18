@@ -1,13 +1,12 @@
-streamlit
+gradio
+faster-whisper
+onnxruntime
 googletrans==4.0.0-rc1
 speechrecognition
 pydub
 gtts
 moviepy
 ffmpeg-python
-faster-whisper
-onnxruntime
 numpy<=1.24.0
-deep_translator
-pip>=25.1.1
+
 
