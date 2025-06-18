@@ -4,5 +4,8 @@ speechrecognition
 pydub
 gtts
 moviepy
-whisper
+openai-whisper
+ffmpeg-python
+torch
 deep_translator
+
