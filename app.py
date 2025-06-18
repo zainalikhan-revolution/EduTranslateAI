@@ -7,9 +7,9 @@ from backend.translator import translate_text
 from backend.subtitle_writer import write_srt_file
 
 
-def process_video(file):
+def process_video(file, target_lang):
     if file is None:
-        return "⚠️ No video uploaded.", None, None
+        return "⚠️ No file uploaded.", None, None, None, None, None
 
     # Save uploaded file temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
@@ -19,42 +19,64 @@ def process_video(file):
     # Transcription
     segments, full_text = transcribe_audio(temp_path)
 
-    # Urdu Translation
-    translated_segments = [translate_text(seg['text'], "ur") for seg in segments]
+    # Translation
+    translated_segments = [translate_text(seg['text'], target_lang) for seg in segments]
+    translated_text = "\n\n".join(translated_segments)
 
     # Generate subtitle files
     os.makedirs("output", exist_ok=True)
     english_srt_path = os.path.join("output", "english.srt")
-    urdu_srt_path = os.path.join("output", "urdu.srt")
+    translated_srt_path = os.path.join("output", f"{target_lang}.srt")
 
     write_srt_file(segments, [seg['text'] for seg in segments], english_srt_path)
-    write_srt_file(segments, translated_segments, urdu_srt_path)
+    write_srt_file(segments, translated_segments, translated_srt_path)
 
-    return full_text, english_srt_path, urdu_srt_path
+    return (
+        full_text,
+        translated_text,
+        temp_path,
+        english_srt_path,
+        translated_srt_path,
+        f"✅ Done! Subtitles translated to {target_lang.upper()}."
+    )
 
 
 def launch_gradio_app():
-    with gr.Blocks(css=".gradio-container { font-family: 'Segoe UI'; max-width: 900px; margin: auto; }") as demo:
+    with gr.Blocks(css=".gradio-container { font-family: 'Segoe UI'; max-width: 950px; margin: auto; }") as demo:
         gr.Markdown("""
         # 🌍 EduTranslateAI
-        ### AI-Powered Subtitle Generator for Education
-        Upload your lecture video/audio file, get instant English & Urdu subtitles, and download `.srt` files.
+        ### AI-Powered Subtitle Generator for Education  
+        Upload your video/audio, generate English & translated subtitles, and download `.srt` files.
         """)
 
         with gr.Row():
-            file_input = gr.File(label="📁 Upload Lecture Video", file_types=[".mp4", ".mp3", ".wav"])
+            file_input = gr.File(label="📁 Upload Lecture File (MP4, MP3, WAV)", file_types=[".mp4", ".mp3", ".wav"])
+            lang_dropdown = gr.Dropdown(
+                label="🌐 Translate to",
+                choices=["ur", "hi", "ar", "fr", "zh"],
+                value="ur",
+                interactive=True
+            )
 
         with gr.Row():
-            english_textbox = gr.Textbox(label="📄 English Transcript", lines=12, interactive=False)
+            video_player = gr.Video(label="🎥 Preview Uploaded File", interactive=False)
+
+        with gr.Tab("📄 English Transcript"):
+            english_box = gr.Textbox(label="English Transcript", lines=12, interactive=False)
+
+        with gr.Tab("🌐 Translated Subtitles"):
+            translated_box = gr.Textbox(label="Translated Transcript", lines=12, interactive=False)
 
         with gr.Row():
-            english_srt_file = gr.File(label="⬇️ Download English Subtitles (.srt)")
-            urdu_srt_file = gr.File(label="⬇️ Download Urdu Subtitles (.srt)")
+            eng_srt_file = gr.File(label="⬇️ Download English Subtitles (.srt)")
+            translated_srt_file = gr.File(label="⬇️ Download Translated Subtitles (.srt)")
+
+        status = gr.Textbox(label="✅ Status", interactive=False)
 
         file_input.change(
             fn=process_video,
-            inputs=file_input,
-            outputs=[english_textbox, english_srt_file, urdu_srt_file]
+            inputs=[file_input, lang_dropdown],
+            outputs=[english_box, translated_box, video_player, eng_srt_file, translated_srt_file, status]
         )
 
         gr.Markdown("---")
