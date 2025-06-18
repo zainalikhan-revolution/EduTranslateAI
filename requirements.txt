@@ -7,7 +7,7 @@ moviepy
 ffmpeg-python
 torch==2.0.1
 numpy<=1.24.0
-openai-whisper
+faster-whisper
 deep_translator
 pip>=25.1.1
 
